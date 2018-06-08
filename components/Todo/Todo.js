@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 class Todo extends React.PureComponent {
-	constructor(props) {
-		super(props);
-		this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
+	handleDeleteClick(){
+		const { todo, onDeleteClick } = this.props;
+		onDeleteClick(todo);
 	}
 
 	handleCheckboxClick(){
@@ -18,6 +18,7 @@ class Todo extends React.PureComponent {
 			<div>
 				<input checked={todo.isComplete} type="checkbox" onChange={this.handleCheckboxClick} />
 				<span>{todo.label}</span>
+				<span onClick={this.handleDeleteClick}> delete</span>
 			</div>
 		);
 	}
@@ -29,10 +30,12 @@ Todo.propTypes = {
 		label: PropTypes.string,
 	}).isRequired,
 	onCheckboxClick: PropTypes.func,
+	onDeleteClick: PropTypes.func,
 }
 
 Todo.defaultProps = {
 	onCheckboxClick: () => {},
+	onDeleteClick: () => {},
 }
 
 export default Todo;
