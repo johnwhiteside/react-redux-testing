@@ -27,15 +27,24 @@ describe('selectors', () => {
 		}
 	}
 
+	describe('getAllTodos', () => {
+		it('should return all todos', () => {
+			const expectResult = [ mockTodo, mockTodo2, mockTodo3 ];
+			expect(selectors.selectCompletedTodos(mockState)).toEqual(expectResult);
+		});
+	});
+
 	describe('selectCompletedTodos', () => {
 		it('Should return todos that are completed', () => {
 			const expectResult = [ mockTodo2, mockTodo3 ];
 			expect(selectors.selectCompletedTodos(mockState)).toEqual(expectResult);
 		});
+	});
 
+	describe('selectUnCompletedTodos', () => {
 		it('Should return todos that are not completed', () => {
 			const expectResult = [ mockTodo ];
 			expect(selectors.selectUnCompletedTodos(mockState)).toEqual(expectResult);
 		});
-	});
+	})
 });

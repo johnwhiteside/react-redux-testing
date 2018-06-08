@@ -8,11 +8,11 @@ export const getAllTodos = createSelector(
 )
 
 export const selectCompletedTodos = createSelector(
-	[getTodos],
+	[getAllTodos],
 	todos => Object.values(todos).filter(({ isCompleted }) => isCompleted),
 );
 
 export const selectUnCompletedTodos = createSelector(
-	[getTodos],
+	[getAllTodos],
 	todos => Object.values(todos).filter(({ isCompleted }) => !isCompleted),
 );
