@@ -1,37 +1,58 @@
 import * as actions from '../actions';
-import { Map, Record } from 'immutable';
-import reducer, { initialState } from '../reducer';
-import Todo from '../model';
+import reducer from '../reducer';
 
 describe('reducer', () => {
-  it('should return state with todo added', () => {
-    const label = 'Test Todo';
-    const todo = new Todo({ id: 0, label });
-    const expectedState = Map([]).set(todo.id, todo);
-    expect(reducer(undefined, actions.addToDo(label))).toEqual(expectedState);
-  });
+	const label = 'Test Todo';
+	const mockTodo = {
+		id: 0,
+		label,
+		isCompleted: false,
+	};
 
-  it('should return state with todo removed', () => {
-    const label = 'Test Todo';
-    const todo = new Todo({ id: 0, label });
-    const testState = Map([]).set(todo.id, todo);
-    const expectedState = Map([]);
-    expect(reducer(testState, actions.deleteToDo(todo.id))).toEqual(expectedState);
-  });
+	it('handle default', () => {
+		expect(reducer(undefined, {})).toEqual({});
+	});
 
-  it('should return state with todo set to incomplete', () => {
-    const label = 'Test Todo';
-    const todo = new Todo({ id: 0, label, isCompleted: true });
-    const testState = Map([]).set(todo.id, todo);
-    const expectedState = testState.update(todo.id, todo => todo.set('isCompleted', false));
-    expect(reducer(testState, actions.setToDoToActive(todo.id))).toEqual(expectedState);
-  });
+	it('handle ADD_TODO', () => {
+		const expectResult = {
+			[mockTodo.id]: mockTodo,
+		}
+		expect(reducer(undefined, actions.addToDo(label))).toEqual(expectResult);
+	});
 
-  it('should return state with todo set to complete', () => {
-    const label = 'Test Todo';
-    const todo = new Todo({ id: 0, label, isCompleted: false });
-    const testState = Map([]).set(todo.id, todo);
-    const expectedState = testState.update(todo.id, todo => todo.set('isCompleted', true));
-    expect(reducer(testState, actions.completeToDo(todo.id))).toEqual(expectedState);
-  });
+	it('handle DELETE_TODO', () => {
+		const mockState = {
+			[mockTodo.id]: mockTodo,
+		};
+		expect(reducer(mockState, actions.deleteToDo(mockTodo.id))).toEqual({});
+	});
+
+	it('handle SET_TODO_TO_ACTIVE', () => {
+		const mockState = {
+			[mockTodo.id]: mockTodo,
+		};
+		const expectResult = {
+			[mockTodo.id]: {
+				...mockTodo,
+				isCompleted: false,
+			},
+		};
+		expect(reducer(mockState, actions.completeToDo(mockTodo.id))).toEqual(expectResult);
+	});
+
+	it('handle COMPLETE_TODO', () => {
+		const mockState = {
+			[mockTodo.id]: {
+				...mockTodo,
+				isCompleted: false,
+			},
+		};
+		const expectResult = {
+			[mockTodo.id]: {
+				...mockTodo,
+				isCompleted: false,
+			},
+		};
+		expect(reducer(mockState, actions.completeToDo(mockTodo.id))).toEqual(expectResult);
+	});
 });

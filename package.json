@@ -4,22 +4,32 @@
   "description": "an example of redux testing",
   "author": "John Whiteside <johnwhitesideii@gmail.com>",
   "license": "MIT",
-  "dependencies": {
-    "axios": "0.15.3",
-    "babel-jest": "^22.4.1",
-    "babel-preset-env": "^1.6.1",
-    "jest": "^22.4.0",
-    "redux": "^3.7.2",
-    "redux-mock-store": "^1.5.1",
-    "redux-thunk": "^2.2.0",
-    "reselect": "^3.0.1"
-  },
+  "dependencies": {},
   "scripts": {
     "test": "jest"
   },
+  "jest": {
+    "setupFiles": [
+      "./jestsetup.js"
+    ],
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ]
+  },
   "devDependencies": {
+    "babel-jest": "^22.4.3",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-react-jsx": "^6.24.1",
-    "immutable": "^3.8.2"
+    "babel-preset-env": "^1.7.0",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "enzyme-to-json": "^3.3.3",
+    "jest": "^22.4.3",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-redux": "^5.0.7",
+    "react-test-renderer": "^16.3.2",
+    "redux": "^4.0.0",
+    "reselect": "^3.0.1"
   }
 }
