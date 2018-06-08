@@ -1,11 +1,13 @@
 import * as actionTypes from './action-types';
 
-export const addToDo = label => ({
-	type: actionTypes.ADD_TODO,
-	payload: {
-		label,
+export const addToDo = label => {
+	return {
+		type: actionTypes.ADD_TODO,
+		payload: {
+			label,
+		}
 	}
-});
+};
 
 export const completeToDo = itemId => ({
 	type: actionTypes.COMPLETE_TODO,

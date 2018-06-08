@@ -2,6 +2,11 @@ import { createSelector } from 'reselect';
 
 export const getTodos = state => state.todos;
 
+export const getAllTodos = createSelector(
+	[getTodos],
+	todos => Object.values(todos),
+)
+
 export const selectCompletedTodos = createSelector(
 	[getTodos],
 	todos => Object.values(todos).filter(({ isCompleted }) => isCompleted),

@@ -2,6 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 class Todo extends React.PureComponent {
+	constructor(props) {
+		super(props);
+		this.state = { value: '' }
+		this.handleDeleteClick = this.handleDeleteClick.bind(this);
+		this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
+	}
+
 	handleDeleteClick(){
 		const { todo, onDeleteClick } = this.props;
 		onDeleteClick(todo);

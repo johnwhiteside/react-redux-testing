@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getTodos } from '../../module/selectors';
+import { getAllTodos } from '../../module/selectors';
 import {
 	completeToDo,
 	setToDoToActive,
@@ -11,13 +11,20 @@ import {
 import Todo from '../Todo';
 import AddTodo from '../AddTodo';
 
-const mapStateToProps = state => {
-	items: getTodos(state);
-};
+const mapStateToProps = state => ({
+	items: getAllTodos(state),
+});
 
 const mapDispatchToProps = { completeToDo, setToDoToActive, deleteToDo, addToDo };
 
 export class TodoList extends React.PureComponent {
+	constructor(props) {
+		super(props);
+		this.state = { value: '' }
+		this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
+		this.handleDelete = this.handleDelete.bind(this);
+		this.addTodo = this.addTodo.bind(this);
+	}
 
 	handleCheckboxClick(todo) {
 		const { completeToDo, setToDoToActive } = this.props;
