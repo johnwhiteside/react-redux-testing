@@ -30,7 +30,7 @@ describe('selectors', () => {
 	describe('getAllTodos', () => {
 		it('should return all todos', () => {
 			const expectResult = [ mockTodo, mockTodo2, mockTodo3 ];
-			expect(selectors.selectCompletedTodos(mockState)).toEqual(expectResult);
+			expect(selectors.getAllTodos(mockState)).toEqual(expectResult);
 		});
 	});
 

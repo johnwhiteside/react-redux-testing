@@ -27,6 +27,14 @@ describe('Todo', () => {
 			wrapper.instance().handleDeleteClick();
 			expect(props.onDeleteClick).toBeCalled();
 		});
+
+		it('doesn\'t error when onDeleteClick prop is undefined', () => {
+			const props = {
+				todo: mockTodo,
+			}
+			const wrapper = shallow(<Todo {...props} />);
+			expect(wrapper.instance().handleDeleteClick).not.toThrow();
+		});
 	});
 
 	describe('handleCheckboxClick', () => {
@@ -38,6 +46,14 @@ describe('Todo', () => {
 			const wrapper = shallow(<Todo {...props} />);
 			wrapper.instance().handleCheckboxClick();
 			expect(props.onCheckboxClick).toBeCalled();
+		});
+
+		it('doesn\'t error when onCheckboxClick prop is undefined', () => {
+			const props = {
+				todo: mockTodo,
+			}
+			const wrapper = shallow(<Todo {...props} />);
+			expect(wrapper.instance().handleCheckboxClick).not.toThrow();
 		});
 	});
 });

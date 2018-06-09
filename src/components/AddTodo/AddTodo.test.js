@@ -32,5 +32,13 @@ describe('AddTodo', () => {
 			expect(mockEvent.preventDefault).toBeCalled();
 			expect(props.onSubmit).toBeCalled();
 		});
+
+		it('doesn\'t error when onSubmit is undefined', () => {
+			const props = {
+				onSubmit: undefined,
+			}
+			const wrapper = shallow(<AddTodo {...props} />);
+			expect(() => wrapper.instance().handleSubmit(mockEvent)).not.toThrow();
+		});
 	});
 });

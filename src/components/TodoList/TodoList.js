@@ -73,6 +73,7 @@ TodoList.defaultProps = {
 	completeToDo: () => {},
 	setToDoToActive: () => {},
 	deleteToDo: () => {},
+	addToDo: () => {},
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(TodoList);

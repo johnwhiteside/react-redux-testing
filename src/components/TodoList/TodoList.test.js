@@ -39,6 +39,14 @@ describe('TodoList', () => {
 			wrapper.instance().handleDelete(mockTodo);
 			expect(props.deleteToDo).toBeCalled();
 		});
+
+		it('doesn\'t error when deleteToDo is undefined', () => {
+			const props = {
+				todo: mockTodo,
+			}
+			const wrapper = shallow(<TodoList {...props} />);
+			expect(() => wrapper.instance().handleDelete(mockTodo)).not.toThrow();
+		});
 	});
 
 	describe('addTodo', () => {
@@ -50,6 +58,14 @@ describe('TodoList', () => {
 			const wrapper = shallow(<TodoList {...props}/>);
 			wrapper.instance().addTodo('Todo');
 			expect(props.addToDo).toBeCalled();
+		});
+
+		it('doesn\'t error when addToDo is undefined', () => {
+			const props = {
+				todo: mockTodo,
+			}
+			const wrapper = shallow(<TodoList {...props} />);
+			expect(() => wrapper.instance().addTodo(mockTodo)).not.toThrow();
 		});
 	});
 
@@ -66,6 +82,14 @@ describe('TodoList', () => {
 			expect(props.setToDoToActive).not.toBeCalled();
 		});
 
+		it('doesn\'t error when completeToDo is undefined', () => {
+			const props = {
+				todo: mockTodo,
+			}
+			const wrapper = shallow(<TodoList {...props} />);
+			expect(() => wrapper.instance().handleCheckboxClick(mockTodo)).not.toThrow();
+		});
+
 		it('should call setToDoToActive', () => {
 			const props = {
 				items: [ mockTodo ],
@@ -76,6 +100,14 @@ describe('TodoList', () => {
 			wrapper.instance().handleCheckboxClick(mockTodo2);
 			expect(props.completeToDo).not.toBeCalled();
 			expect(props.setToDoToActive).toBeCalled();
+		});
+
+		it('doesn\'t error when setToDoToActive is undefined', () => {
+			const props = {
+				todo: mockTodo,
+			}
+			const wrapper = shallow(<TodoList {...props} />);
+			expect(() => wrapper.instance().handleCheckboxClick(mockTodo2)).not.toThrow();
 		});
 	});
 });
