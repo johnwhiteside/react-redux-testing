@@ -4,6 +4,7 @@ let lastId = 0;
 
 export const initialState = {
 	todos: {},
+	fetching: false,
 }
 
 const reducer = (state = initialState, action) => {
@@ -55,6 +56,29 @@ const reducer = (state = initialState, action) => {
 					}
 				},
 			}
+
+		case actionTypes.FETCH_START:
+			return {
+				...state,
+				fetching: true,
+			}
+
+		case actionTypes.FETCH_FAIL:
+			return {
+				...state,
+				fetching: false,
+			}
+
+		case actionTypes.FETCH_SUCCESS:
+			return {
+				...state,
+				fetching: false,
+				todos: {
+					...state.todos,
+					...action.payload.todos,
+				},
+			};
+
 		default: return state;
 	};
 }
