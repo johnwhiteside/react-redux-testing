@@ -1,5 +1,5 @@
 # React Redux Testing
-This is a simple todo list application to demonstrate how to unit test react-redux applications using jest.
+This is a simple todo list application to demonstrate how to unit test React/Redux applications using [jest](https://facebook.github.io/jest/). 
 
 ## Getting Started
 Run `yarn install` to install all dependencies
@@ -12,15 +12,19 @@ Runs all unit tests
 #### `yarn test:coverage`
 Runs all unit tests and creates a coverage report
 
-## Testing 
+## Unit Testing 
+Unit tests are important to an application because they ensure the integrity of your code and the stability of the application. In a React/Redux application there are several different peices involved in making something happen and its important that each of those are covered. Each new feature in an application should be accompanied by tests and every bug fix should include some tests to ensure that the bug is not reintroduced at a later time. It also helps the next developer that may work on the code understand the intentions of the previous developer and understand how the code should function.
+
+### Code Coverage
+This project includes a script for creating a code coverage report. This report is helpful in making sure everything is fully tested. Its best to strive towards having 100% coverage, but in some cases it make not be realistic and your coverage will be in the 90% range. Its not bad to have less than 100% because you may have some places where it just doesn't make sense to test that part of the code. Its importan to know where you are getting the most value with your tests.  
 
 ### Actions
-There are two types of actions that are used in redux applications. There are action creators and async actions using [thunk](https://github.com/reduxjs/redux-thunk).
+There are two types of actions that are used in redux applications. There are synchronous action creators and async action creators. When testing synchronous action creators we want to make sure the correct is returned, when testing async actions we want to make sure the correct actions were dispatched.
 
 #### Synchronous Action Creators
-Action creators are a simple function that returns an action object. I have found in most cases that its not neccisarily important to test action creators because when you test the reducer you use action creators to create the action that gets ran through the reducer function. If the action creator is returning something invalid then the reducer tests should fail. Even though I generally don't test these I have included an example below to show how these can be tested. 
+I have found in most cases that its not neccisarily important to test action creators because when you test the reducer you use action creators to create the action that gets ran through the reducer function. If the action creator is returning something invalid then the reducer tests should fail. Even though I generally don't test these I have included an example below to show how these can be tested. 
 
-Here is an action creator for adding a todo:
+##### Example Action Creator:
 ```
 export const addToDo = label => ({
 	type: actionTypes.ADD_TODO,
@@ -43,9 +47,9 @@ it('should return action to create todo', () => {
 });
 ```
 #### Async Action Creators
-When testing async action creators you are basically testing to make sure that the correct action are called. This requires creating a mock store, dispatching the action, and checking to make sure the correct actions have been called.
+When testing async action creators we want to make sure that the correct actions are dispatched. This requires creating a mock store, dispatching the action, and checking to make sure the correct actions have been called.
 
-##### Example:
+##### Example Action:
 ```
 export const fetchTodos = id => dispatch => {
 	dispatch(fetchStart());
@@ -64,7 +68,7 @@ export const fetchTodos = id => dispatch => {
 
 This action dispatchs three other actions fetchStart, fetchSuccess, and fetchFail. We need to make sure those actions are only dispatched when expected.
 
-##### Test:
+##### Example Test:
 ```
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -103,6 +107,212 @@ describe('fetchTodos', () => {
 First we use configureMockStore to create a mock store and assign it to mockStore. This variable can then be used in each test with a mock state to dispatch the actions. If some action being dispatched is dependent on something being set in state then you need to mock it in the test. These tests also have an argument called done being passed in which is just a function you call to indicate that the async test is complete. In expectedActions I created an array using the action creators to create a mock of what store.getActions() returns.
 
 ### Reducer
+When testing the reducer its important to make sure that every case is tested. Lets say we have a reducer that looks like this:
+
+##### Example Reducer:
+```
+import * as actionTypes from './action-types';
+
+let lastId = 0;
+
+export const initialState = {
+	todos: {},
+	fetching: false,
+}
+
+const reducer = (state = initialState, action) => {
+	switch (action.type) {
+		case actionTypes.ADD_TODO:
+			const todo = {
+				id: lastId++,
+				label: action.payload.label,
+				isCompleted: false,
+			};
+			return {
+				...state,
+				todos: {
+					...state.todos,
+					[todo.id]: todo,
+				},
+			};
+
+		case actionTypes.DELETE_TODO:
+			const nextTodoState = {
+				...state.todos,
+			};
+			delete nextTodoState[action.payload.itemId]
+			return {
+				...state,
+				todos: nextTodoState,
+			};
+
+		case actionTypes.SET_TODO_TO_ACTIVE:
+			return {
+				...state,
+				todos: {
+					...state.todos,
+					[action.payload.itemId]: {
+						...state.todos[action.payload.itemId],
+						isCompleted: false,
+					}
+				}
+			}
+
+		case actionTypes.COMPLETE_TODO:
+			return {
+				...state,
+				todos: {
+					...state.todos,
+					[action.payload.itemId]: {
+						...state.todos[action.payload.itemId],
+						isCompleted: true,
+					}
+				},
+			}
+
+		case actionTypes.FETCH_START:
+			return {
+				...state,
+				fetching: true,
+			}
+
+		case actionTypes.FETCH_FAIL:
+			return {
+				...state,
+				fetching: false,
+			}
+
+		case actionTypes.FETCH_SUCCESS:
+			return {
+				...state,
+				fetching: false,
+				todos: {
+					...state.todos,
+					...action.payload.todos,
+				},
+			};
+
+		default: return state;
+	};
+}
+
+export default reducer;
+```
+Each case in the reducer returns a new state with whatever changes were made for the action that was dispatched, if there is no actionType in this reducer then it will return whatever state was passed in. When testing we want to make sure that the correct changes are made for the action that was dispatched. To test this we mock state if needed and call the reducer with the mocked state and action returned by the action creator. This looks like this `reducer(state, action)`. We also need to mock what the expected state should look like and use this to compare with the output of the reducer.
+
+##### Example Tests:
+```
+import * as actions from '../actions';
+import reducer, { initialState } from '../reducer';
+
+describe('reducer', () => {
+	const label = 'Test Todo';
+	const mockTodo = {
+		id: 0,
+		label,
+		isCompleted: false,
+	};
+
+	it('handle default', () => {
+		expect(reducer(undefined, {})).toEqual(initialState);
+	});
+
+	it('handle ADD_TODO', () => {
+		const expectedResult = {
+			fetching: false,
+			todos: {
+				[mockTodo.id]: mockTodo,
+			},
+		}
+		expect(reducer(undefined, actions.addToDo(label))).toEqual(expectedResult);
+	});
+
+	it('handle DELETE_TODO', () => {
+		const mockState = {
+			fetching: false,
+			todos: {
+				[mockTodo.id]: mockTodo,
+			},
+		};
+		const expectedResult = {
+			fetching: false,
+			todos: {}
+		};
+		expect(reducer(mockState, actions.deleteToDo(mockTodo.id))).toEqual(expectedResult);
+	});
+
+	it('handle SET_TODO_TO_ACTIVE', () => {
+		const mockState = {
+			fetching: false,
+			todos: {
+				[mockTodo.id]: {
+					...mockTodo,
+					isCompleted: true,
+				},
+			}
+		};
+		const expectedResult = {
+			fetching: false,
+			todos: {
+				[mockTodo.id]: {
+					...mockTodo,
+					isCompleted: false,
+				},
+			},
+		};
+		expect(reducer(mockState, actions.setToDoToActive(mockTodo.id))).toEqual(expectedResult);
+	});
+
+	it('handle COMPLETE_TODO', () => {
+		const mockState = {
+			fetching: false,
+			todos: {
+				[mockTodo.id]: {
+					...mockTodo,
+					isCompleted: false,
+				},
+			},
+		};
+		const expectedResult = {
+			fetching: false,
+			todos: {
+				[mockTodo.id]: {
+					...mockTodo,
+					isCompleted: true,
+				},
+			},
+		};
+		expect(reducer(mockState, actions.completeToDo(mockTodo.id))).toEqual(expectedResult);
+	});
+
+	it('handle FETCH_START', () => {
+		const mockState = { fetching: false };
+		const expectedResult = { fetching: true };
+		expect(reducer(mockState, actions.fetchStart())).toEqual(expectedResult);
+	});
+
+	it('handle FETCH_FAIL', () => {
+		const mockState = { fetching: true };
+		const expectedResult = { fetching: false };
+		expect(reducer(mockState, actions.fetchFail())).toEqual(expectedResult);
+	});
+
+	it('handle FETCH_SUCCESS', () => {
+		const mockState = {
+			fetching: true,
+			todos: {},
+		};
+		const todos = {
+			[mockTodo.id]: mockTodo,
+		};
+		const expectedResult = {
+			fetching: false,
+			todos,
+		};
+		expect(reducer(mockState, actions.fetchSuccess(todos))).toEqual(expectedResult);
+	});
+});
+```
 
 ### Components
 
@@ -205,7 +415,7 @@ If you have some lifecylce methods that are supposed to trigger a function you c
 ### Selectors
 In this project I am using a library called [reselect](https://github.com/reduxjs/reselect) to create selectors. Testing selectors is pretty easy, all you need to do is mock the state, pass the mocked state into the selector, and evaluate the output.
 
-Here is a selector for getting all todo items:
+##### Example Selector:
 ```
 export const getTodos = state => state.todos;
 
@@ -243,7 +453,7 @@ I created a mock for the data like this:
 	}
 ```
 
-The test looks like this:
+##### Example Test:
 ```
 	describe('getAllTodos', () => {
 		it('should return all todos', () => {
