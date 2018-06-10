@@ -1,0 +1,16 @@
+{
+	"data": {
+		"todos": [
+			{
+				"id": 1,
+				"label": "Mock Todo",
+				"isCompleted": false
+			},
+			{
+				"id": 2,
+				"label": "Mock Todo 2",
+				"isCompleted": true
+			}
+		]
+	}
+}

@@ -1,5 +1,16 @@
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import {
+	MOCK_IDS,
+	MOCK_SUCCESS,
+	MOCK_ERROR,
+} from '../__mocks__/axios';
+
 import * as actions from '../actions';
 import * as actionTypes from '../action-types';
+
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
 
 describe('actions', () => {
 	it('should return action to create todo', () => {
@@ -44,5 +55,33 @@ describe('actions', () => {
 			}
 		};
 		expect(actions.setToDoToActive(itemId)).toEqual(expectedAction);
+	});
+
+	describe('fetchTodos', () => {
+		it('successfully fetches todos', done => {
+			const mockState = {};
+			const store = mockStore(mockState);
+			const expectedActions = [
+				actions.fetchStart(),
+				actions.fetchSuccess(MOCK_SUCCESS.data),
+			];
+			store.dispatch(actions.fetchTodos(MOCK_IDS.success)).then(() => {
+				expect(store.getActions()).toEqual(expectedActions);
+				done();
+			});
+		});
+
+		it('fails to fetch todos', done => {
+			const mockState = {};
+			const store = mockStore(mockState);
+			const expectedActions = [
+				actions.fetchStart(),
+				actions.fetchFail(MOCK_ERROR),
+			];
+			store.dispatch(actions.fetchTodos(MOCK_IDS.fail)).then(() => {
+				expect(store.getActions()).toEqual(expectedActions);
+				done();
+			});
+		});
 	});
 });
