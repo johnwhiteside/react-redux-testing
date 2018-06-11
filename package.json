@@ -1,7 +1,7 @@
 {
-  "name": "redux-testing",
+  "name": "react-redux-testing",
   "version": "1.0.0",
-  "description": "an example of redux testing",
+  "description": "A simple todo list application to demonstrate how to unit test React/Redux applications using Jest.",
   "author": "John Whiteside <johnwhitesideii@gmail.com>",
   "license": "MIT",
   "dependencies": {},
