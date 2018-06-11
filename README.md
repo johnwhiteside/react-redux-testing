@@ -1,5 +1,5 @@
 # React Redux Testing
-This is a simple todo list application to demonstrate how to unit test React/Redux applications using [jest](https://facebook.github.io/jest/). 
+This is a simple todo list application to demonstrate how to unit test React/Redux applications using [jest](https://facebook.github.io/jest/).
 
 ## Getting Started
 Run `yarn install` to install all dependencies
@@ -12,17 +12,17 @@ Runs all unit tests
 #### `yarn test:coverage`
 Runs all unit tests and creates a coverage report
 
-## Unit Testing 
-Unit tests are important to an application because they ensure the integrity of your code and the stability of the application. In a React/Redux application there are several different peices involved in making something happen and its important that each of those are covered. Each new feature in an application should be accompanied by tests and every bug fix should include some tests to ensure that the bug is not reintroduced at a later time. It also helps the next developer that may work on the code understand the intentions of the previous developer and understand how the code should function.
+## Unit Testing
+In a React/Redux application there are several different pieces involved in making something happens and it's important that each of those are covered by tests. Each new feature in an application should be accompanied by tests and every bug fix should include some tests to ensure that the bug is not reintroduced at a later time. It also helps the next developer that works on the code understand the intentions of the previous developer and understand how the code should function.
 
 ### Code Coverage
-This project includes a script for creating a code coverage report. This report is helpful in making sure everything is fully tested. Its best to strive towards having 100% coverage, but in some cases it make not be realistic and your coverage will be in the 90% range. Its not bad to have less than 100% because you may have some places where it just doesn't make sense to test that part of the code. Its importan to know where you are getting the most value with your tests.  
+This project includes a script for creating a code coverage report. This report is helpful in making sure everything is fully tested. Its best for developers strive towards 100% coverage, but in some cases it may not be realistic and your coverage could be in the 90% range. Its not bad to have less than 100% because you may have some places where it just doesn't make sense to test that part of the code. Its important to make sure your test are providing value and not just giving you code coverage.
 
 ### Actions
-There are two types of actions that are used in redux applications. There are synchronous action creators and async action creators. When testing synchronous action creators we want to make sure the correct is returned, when testing async actions we want to make sure the correct actions were dispatched.
+There are two types of actions that are used in redux applications. There are synchronous action creators and async action creators. When testing synchronous action creators we want to make sure the correct action is returned, when testing async actions we want to make sure the correct actions are dispatched.
 
 #### Synchronous Action Creators
-I have found in most cases that its not neccisarily important to test action creators because when you test the reducer you use action creators to create the action that gets ran through the reducer function. If the action creator is returning something invalid then the reducer tests should fail. Even though I generally don't test these I have included an example below to show how these can be tested. 
+I have found in most cases that it's not necessarily important to test synchronous action creators because when you test the reducer you use action creators to create the action that gets ran through the reducer function. If the action creator is returning something invalid then the reducer tests should fail. Even though I generally don't test these I have included examples to show how these can be tested.
 
 ##### Example Action Creator:
 ```
@@ -33,7 +33,7 @@ export const addToDo = label => ({
 	}
 });
 ```
-Action can creators can be tested like this.
+##### Example Test:
 ```
 it('should return action to create todo', () => {
 	const label = 'Test Todo';
@@ -66,7 +66,7 @@ export const fetchTodos = id => dispatch => {
 };
 ```
 
-This action dispatchs three other actions fetchStart, fetchSuccess, and fetchFail. We need to make sure those actions are only dispatched when expected.
+This action dispatches three other actions fetchStart, fetchSuccess, and fetchFail so we want to make sure each of those dispatch when we want them to.
 
 ##### Example Test:
 ```
@@ -74,7 +74,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
 const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
+const mockStore = configureMockStore(middlewares); // This returns a function we can use to mock the store
 
 describe('fetchTodos', () => {
 	it('successfully fetches todos', done => {
@@ -104,10 +104,10 @@ describe('fetchTodos', () => {
 	});
 });
 ```
-First we use configureMockStore to create a mock store and assign it to mockStore. This variable can then be used in each test with a mock state to dispatch the actions. If some action being dispatched is dependent on something being set in state then you need to mock it in the test. These tests also have an argument called done being passed in which is just a function you call to indicate that the async test is complete. In expectedActions I created an array using the action creators to create a mock of what store.getActions() returns.
+First we call configureMockStore passing in any middleware that is needed, this returns a function we can use to create a mock store. If some action being dispatched is dependent on something being set in state then you need to pass an object mocking that part of state into the function returned from configureMockStore. These tests also have an argument called done being passed in which is just a function you call to indicate that the async test is complete. In expectedActions I created an array using the action creators to create a mock of what store.getActions() returns.
 
 ### Reducer
-When testing the reducer its important to make sure that every case is tested. Lets say we have a reducer that looks like this:
+When testing the reducer it's important to make sure that every case is tested. Lets say we have a reducer that looks like this:
 
 ##### Example Reducer:
 ```
@@ -198,7 +198,7 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 ```
-Each case in the reducer returns a new state with whatever changes were made for the action that was dispatched, if there is no actionType in this reducer then it will return whatever state was passed in. When testing we want to make sure that the correct changes are made for the action that was dispatched. To test this we mock state if needed and call the reducer with the mocked state and action returned by the action creator. This looks like this `reducer(state, action)`. We also need to mock what the expected state should look like and use this to compare with the output of the reducer.
+Each case in the reducer returns a new state with whatever changes were made for the action that was dispatched. If the action doesn't have an actionType that matches an action type in the reducer then it will return whatever state was passed in or initialState. When testing we want to make sure that the correct changes are made for the action that was dispatched. To test this we mock state if needed and call the reducer with the mocked state and action returned by the action creator. This looks like this `reducer(state, action)`. We also need to mock what the expected state should look like and use this to compare with the output of the reducer.
 
 ##### Example Tests:
 ```
@@ -317,12 +317,12 @@ describe('reducer', () => {
 ### Components
 
 #### Enzyme
-[Enzyme](http://airbnb.io/enzyme/) is a library that allows you create a mock DOM and test whether the component behaves correctly.
+[Enzyme](http://airbnb.io/enzyme/) is a library that allows you create a mock DOM and test whether a component behaves correctly.
 
-With Enzyme you can do either [shallow rendering](http://airbnb.io/enzyme/docs/api/shallow.html) or [full DOM rendering](http://airbnb.io/enzyme/docs/api/mount.html). Shallow rendering is what I use probably 90% of the time, it allows you to keep your tests contained to just the functionality of the the component without having to worry about how other components interact with it. Full DOM rendering allows you to test how components in the DOM inteact with eachother.
+With Enzyme you can do either [shallow rendering](http://airbnb.io/enzyme/docs/api/shallow.html) or [full DOM rendering](http://airbnb.io/enzyme/docs/api/mount.html). Shallow rendering is what I use probably 90% of the time, it allows you to keep your tests contained to just the functionality of the the component without having to worry about how other components interact with it. Full DOM rendering allows you to test how components in the DOM interact with each other.
 
 #### Connected and Unconnected components
-When working with redux you have two types of components, connected components and unconnected components. When testing a component that is connected its best to export the class so you can you focus the testing to just the functionality within scope of the component.
+When working with redux you have two types of components, connected components and unconnected components. When testing a component that is connected, it's best to export the class so you can you focus the tests to just the functionality within scope of the component.
 ````
 const mapStateToProps = state => ({
 	items: getAllTodos(state),
@@ -337,11 +337,10 @@ export class TodoList extends React.PureComponent {
 export default connect(mapStateToProps, mapDispatchToProps)(TodoList);
 ````
 
-Notice I have two exports in the file, that allows me to use the component in a test file unconnected. Everything should be covered with unit tests so you shouldn't need to worry about whether a selector returns the correct thing, just pass the prop you are expecting to the component while testing. Its also best not to add logic within mapStateToProps or mapDispatchToProps. This keeps the logic contained to their respective files which makes everything easier to test. 
+Notice I have two exports in the file, that allows me to use the component in a test file unconnected. Everything should be covered with unit tests so you shouldn't need to worry about whether a selector returns the correct thing, just pass the prop you are expecting to the component while testing. Its also best not to add logic within mapStateToProps or mapDispatchToProps. This keeps the logic contained to their respective files which makes everything easier to test.
 
-#### Example Component
- 
 Here is an example component using the Todo component which basically just renders a Todo item and handles what happens when you click the delete button and select the check box. This component is not connected to the redux store.
+#### Example Component
 ```
 class Todo extends React.PureComponent {
 	handleDeleteClick(){
@@ -366,12 +365,10 @@ class Todo extends React.PureComponent {
 	}
 };
 ```
-
-#### Example Test: 
-The first thing I do is create a simple test that just makes sure the component renders without any issues
+#### Example Test:
 ```
 import React from 'react';
-import Todo from './Todo'; 
+import Todo from './Todo';
 import { shallow } from 'enzyme';
 
 describe('Todo', () => {
@@ -390,10 +387,10 @@ describe('Todo', () => {
 	});
 });
 ```
-In this test i'm mocking a todo item and passing that item as a prop to the Todo component. I'm using the shallow util from enzyme to do a shallow render and then checking to make sure the component actually rendered by checking the length of the wrapper. Most of the time I don't pass any props into the component because the default props should prevent errors, but in this case todo is a required prop so I have to mock it.
+The first thing I do is create a simple test that just makes sure the component renders without any issues. In this test i'm mocking a todo item and passing that item as a prop to the Todo component. I'm using the shallow util from enzyme to do a shallow render and then checking to make sure the component actually rendered by checking the length of the wrapper. Most of the time I don't pass any props into the component for this type of test because default props should prevent errors, but in this case todo is a required prop so I have to mock it.
 
 This component also has two class methods handleDeleteClick and handleCheckboxClick, both of these need to be tested.
-This is an example of how to test one of these class methods. 
+#### Example Test:
 ```
 describe('handleDeleteClick', () => {
 	it('should call onDelete', () => {
@@ -407,13 +404,13 @@ describe('handleDeleteClick', () => {
 	});
 });
 ```
-In the mocked props I've added a todo and a mocked function for onDeleteClick. Using jest.fn() provides an easy way to test the component without needing to worry about the actual implementation. If onDeleteClick was an action in mapDispatchToProps this would allow me to test whether the function got called doesn't require creating a mock store and everything.
-`wrapper.instance()` gets the instance of the root node being rendered and gives you access to class methods like handleDeleteClick. In this test i'm calling handleDeleteClick and then checking to see if my mock function was called or not. 
+In the mocked props I've added a todo and a mocked function for onDeleteClick. Using jest.fn() provides an easy way to test a prop that is a function without needing to worry about the actual implementation. If onDeleteClick was an action in mapDispatchToProps this would allow me to test whether the function was called and doesn't require the mocking store and everything.
+`wrapper.instance()` gets the instance of the root node being rendered and gives you access to class methods like handleDeleteClick. In this test i'm calling handleDeleteClick and then checking to see if my mock function was called or not.
 
-If you have some lifecylce methods that are supposed to trigger a function you can use this same approach to test whether that function will be called or not. Lets say you have a fetchData prop that gets called when the component mounts, all you would need to do is mount the component and check whether the mock function gets called.
+If you have some lifecycle methods that are supposed to trigger a function you can use this same approach to test whether that function will be called or not. Lets say you have a fetchData prop that gets called when the component mounts, all you would need to do is mount the component and check whether the mock function gets called.
 
 ### Selectors
-In this project I am using a library called [reselect](https://github.com/reduxjs/reselect) to create selectors. Testing selectors is pretty easy, all you need to do is mock the state, pass the mocked state into the selector, and evaluate the output.
+This project uses [reselect](https://github.com/reduxjs/reselect) to create selectors for getting data from the store. Testing selectors is pretty easy, all you need to do is mock the state, pass the mocked state into the selector, and evaluate the output.
 
 ##### Example Selector:
 ```
@@ -424,7 +421,7 @@ export const getAllTodos = createSelector(
 	todos => Object.values(todos),
 );
 ```
-I created a mock for the data like this:
+This what my mock state looks like:
 ```
 	const mockTodo = {
 		id: 1,
