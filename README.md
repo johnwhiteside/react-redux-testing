@@ -340,7 +340,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(TodoList);
 Notice I have two exports in the file, that allows me to use the component in a test file unconnected. Everything should be covered with unit tests so you shouldn't need to worry about whether a selector returns the correct thing, just pass the prop you are expecting to the component while testing. Its also best not to add a lot of logic within mapStateToProps or mapDispatchToProps. This keeps the logic contained to their respective files and makes everything easier to test.
 
 Here is an example component using the Todo component which basically just renders a Todo item and handles what happens when you click the delete button and the check box. This component is not connected.
-#### Example Component
+##### Example Component
 ```
 class Todo extends React.PureComponent {
 	handleDeleteClick(){
@@ -365,7 +365,7 @@ class Todo extends React.PureComponent {
 	}
 };
 ```
-#### Example Test:
+##### Example Test:
 ```
 import React from 'react';
 import Todo from './Todo';
@@ -387,8 +387,13 @@ describe('Todo', () => {
 	});
 });
 ```
-The first thing I do is create a simple test that just makes sure the component renders without any issues. In this test i'm mocking a todo item and passing that item as a prop to the Todo component. I'm using the shallow util from enzyme to do a shallow render and then checking to make sure the component actually rendered by checking the length of the wrapper. Most of the time I don't pass any props into the component for this type of test because default props should prevent errors, but in this case todo is a required prop so I have to mock it. This component also has two class methods handleDeleteClick and handleCheckboxClick, both of these need to be tested.
-#### Example Test:
+The first thing I do is create a simple test that just makes sure the component renders without any issues. In this test i'm mocking a todo item and passing that item as a prop to the Todo component. I'm using the shallow util from enzyme to do a shallow render and then checking to make sure the component actually rendered by checking the length of the wrapper. Most of the time I don't pass any props into the component for this type of test because default props should prevent errors, but in this case todo is a required prop so I have to mock it.
+
+#### Class and Lifecycle Methods
+Your component may have some class methods or lifecycle methods the need to be tested. You can test these by mounting the component and either calling the class methods or triggering whatever change that causes the a lifecyle method to be called.
+##### Class Methods
+The Todo component above has two class methods handleDeleteClick and handleCheckboxClick. In the example below we are going to test handleDeleteClick. First we mock the props and for the onDeleteClick prop we are going to use a [mock function](https://facebook.github.io/jest/docs/en/mock-functions.html) that will be used for this prop. We can then mount the component, call handleDeleteClick, and see if the mock function was called. 
+##### Example Test:
 ```
 describe('handleDeleteClick', () => {
 	it('should call onDelete', () => {
@@ -402,10 +407,39 @@ describe('handleDeleteClick', () => {
 	});
 });
 ```
-In the mocked props I've added a todo and a mocked function for onDeleteClick. Using jest.fn() provides an easy way to test a prop that is a function without needing to worry about the actual implementation. If onDeleteClick was an action in mapDispatchToProps this would allow me to test whether the function was called and doesn't require the mocking store and everything.
+Using `jest.fn()` provides an easy way to test a prop that is a function without needing to worry about the actual implementation. If onDeleteClick was an action in mapDispatchToProps this would allow me to test whether the function was called and doesn't require the mocking store and everything.
 `wrapper.instance()` gets the instance of the root node being rendered and gives you access to class methods like handleDeleteClick. In this test i'm calling handleDeleteClick and then checking to see if my mock function was called or not.
 
-If you have some lifecycle methods that are supposed to trigger a function you can use this same approach to test whether that function will be called or not. Lets say you have a fetchData prop that gets called when the component mounts, all you would need to do is mount the component and check whether the mock function gets called.
+##### Lifecycle Methods
+I don't have very many lifecycle method examples in this project yet, but it's important to know how to test these. If you have some lifecycle methods that are supposed to trigger a function you can use this same approach as I used on class methods to test whether that function will be called or not. With lifecycle methods you need to mount the component and then trigger whatever is needed for the lifecycle method to be called. In the TodoList component, fetchTodos is called in componentWillMount, to test this we need to create a mock function, mount the component and pass the mocked function in props. We can then check to see if the mocked function was actually called when the component mounts.
+##### Example Test:
+```
+describe('componentWillMount', () => {
+	it('should call fetchTodos when the component mounts', () => {
+		const props = {
+			fetchTodos: jest.fn(),
+		};
+		const wrapper = mount(<TodoList {...props} />);
+		expect(props.fetchTodos).toBeCalled();
+	});
+});
+```
+If we have a function that gets called when componentWillReceiveProps is called we can use `wrapper.setProps` to trigger componentWillReceiveProps. Lets say we have a prop called "listId" and when it changes, we fetch todos for that id. We could test that like this:
+##### Example Test:
+```
+describe('componentWillReceiveProps', () => {
+	it('should call fetchTodos when the component receives a new listId', () => {
+		const props = {
+			fetchTodos: jest.fn(),
+			listId: 1,
+		};
+		const wrapper = mount(<TodoList {...props} />);
+		wrapper.setProps({ id: 2 });
+		expect(props.fetchTodos).toBeCalled();
+	});
+});
+```
+You can use that approach to test other lifecycle methods like shouldComponentUpdate. You can also use `setState` to trigger state to test something that should happen when the state changes.
 
 ### Selectors
 This project uses [reselect](https://github.com/reduxjs/reselect) to create selectors for getting data from the store. Testing selectors is pretty easy, all you need to do is mock the state, pass the mocked state into the selector, and evaluate the output.
