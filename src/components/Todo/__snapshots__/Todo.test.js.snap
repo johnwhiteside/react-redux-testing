@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Todo renders todo correctly 1`] = `
+<div>
+  <input
+    checked={false}
+    onChange={[Function]}
+    type="checkbox"
+  />
+  <span>
+    Mock Todo
+  </span>
+</div>
+`;

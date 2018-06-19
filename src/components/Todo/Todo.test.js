@@ -1,6 +1,7 @@
 import React from 'react';
 import Todo from './Todo';
 import { shallow } from 'enzyme';
+import renderer from 'react-test-renderer';
 
 describe('Todo', () => {
 	const mockTodo = {
@@ -15,6 +16,14 @@ describe('Todo', () => {
 		}
 		const wrapper = shallow(<Todo {...props} />);
 		expect(wrapper.length).toEqual(1);
+	});
+
+	it('renders todo correctly', () => {
+		const props = {
+			todo: mockTodo,
+		}
+		const todo = renderer.create(<Todo {...props} />).toJSON();
+		expect(todo).toMatchSnapshot();
 	});
 
 	describe('handleDeleteClick', () => {
