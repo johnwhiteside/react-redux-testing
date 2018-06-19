@@ -10,7 +10,7 @@ import * as actions from '../actions';
 import * as actionTypes from '../action-types';
 
 const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
+const mockStore = configureMockStore(middlewares); // This returns a function we can use to mock the store
 
 describe('actions', () => {
 	it('should return action to create todo', () => {
