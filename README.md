@@ -426,7 +426,7 @@ describe('componentWillMount', () => {
 	});
 });
 ```
-If we have a function that gets called when componentWillReceiveProps is called we can use `wrapper.setProps` to trigger componentWillReceiveProps. Lets say we have a prop called "listId" and when it changes, we fetch todos for that id. We could test that like this:
+In this example i'm using `expect(mockedFunction).toBeCalled();` to see if my mock function has been called, if we expect the function to be called with some value we can use `expect(mockedFunction).toBeCalledWith(value);` If we have a function that gets called when componentWillReceiveProps is called we can use `wrapper.setProps` to trigger componentWillReceiveProps. Lets say we have a prop called "listId" and when it changes, we fetch todos for that id. We could test that like this:
 ##### Example Test:
 ```
 describe('componentWillReceiveProps', () => {
