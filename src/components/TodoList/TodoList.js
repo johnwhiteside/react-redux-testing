@@ -26,6 +26,10 @@ export class TodoList extends React.PureComponent {
 		this.addTodo = this.addTodo.bind(this);
 	}
 
+	componentWillMount(){
+		this.props.fetchTodos();
+	}
+
 	handleCheckboxClick(todo) {
 		const { completeToDo, setToDoToActive } = this.props;
 		return todo.isComplete ? setToDoToActive(todo.id) : completeToDo(todo.id);
@@ -74,6 +78,7 @@ TodoList.defaultProps = {
 	setToDoToActive: () => {},
 	deleteToDo: () => {},
 	addToDo: () => {},
+	fetchTodos: () => {},
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(TodoList);

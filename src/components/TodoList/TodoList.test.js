@@ -29,6 +29,16 @@ describe('TodoList', () => {
 		expect(wrapper.find(Todo).length).toEqual(1);
 	});
 
+	describe('componentWillMount', () => {
+		it('should call fetchTodos when the component mounts', () => {
+			const props = {
+				fetchTodos: jest.fn(),
+			};
+			const wrapper = mount(<TodoList {...props} />);
+			expect(props.fetchTodos).toBeCalled();
+		});
+	});
+
 	describe('handleDelete', () => {
 		it('should call deleteToDo', () => {
 			const props = {
