@@ -11,6 +11,8 @@ Runs the application, open [http://localhost:8080](http://localhost:8080) to vie
 Runs all unit tests
 #### `yarn test:coverage`
 Runs all unit tests and creates a coverage report
+#### `yarn test:updateSnapshot`
+Runs unit tests and updates snapshots
 
 ## Unit Testing
 In a React/Redux application there are several different pieces involved in making something happens and it's important that each of those are covered by tests. Each new feature in an application should be accompanied by tests and every bug fix should include some tests to ensure the bug is not reintroduced at a later time. It also helps the next developer who works on the code to understand how the code should function especially in cases where the code is more complex.
@@ -392,7 +394,7 @@ The first thing I do is create a simple test that just makes sure the component 
 #### Class and Lifecycle Methods
 Your component may have some class methods or lifecycle methods the need to be tested. You can test these by mounting the component and either calling the class methods or triggering whatever change that causes the a lifecyle method to be called.
 ##### Class Methods
-The Todo component above has two class methods handleDeleteClick and handleCheckboxClick. In the example below we are going to test handleDeleteClick. First we mock the props and for the onDeleteClick prop we are going to use a [mock function](https://facebook.github.io/jest/docs/en/mock-functions.html) that will be used for this prop. We can then mount the component, call handleDeleteClick, and see if the mock function was called. 
+The Todo component above has two class methods handleDeleteClick and handleCheckboxClick. In the example below we are going to test handleDeleteClick. First we mock the props and for the onDeleteClick prop we are going to use a [mock function](https://facebook.github.io/jest/docs/en/mock-functions.html) that will be used for this prop. We can then mount the component, call handleDeleteClick, and see if the mock function was called.
 ##### Example Test:
 ```
 describe('handleDeleteClick', () => {
@@ -440,6 +442,21 @@ describe('componentWillReceiveProps', () => {
 });
 ```
 You can use that approach to test other lifecycle methods like shouldComponentUpdate. You can also use `setState` to trigger state to test something that should happen when the state changes.
+
+#### Snapshot Tests
+Snapshots are a great way to catch unexpected changes in the UI that may cause a regression. A snapshot test will render a component, take a snapshot, and compare it against a reference image, if the two don't match the test will fail. The test will fail if there was an intentional change made and the snapshot needs to be updated or there was an unexpected change that causes a regression. Below is a snapshot test I have written for the todo component. To create a snapshot test we need to use [react-test-renderer](https://reactjs.org/docs/test-renderer.html), this provides a react renderer that renders components to pure Javascript without requiring the DOM. In the test we use react-test-renderer to render the component and then check to see if the snapshot matches the previous snapshot, if there is not an existing snapshot one will be created.  
+
+##### Example Test:
+```
+it('renders todo correctly', () => {
+	const props = {
+		todo: mockTodo,
+	}
+	const todo = renderer.create(<Todo {...props} />).toJSON();
+	expect(todo).toMatchSnapshot();
+});
+```
+If a snapshot was created you'll `1 snapshot written.` in the console when you run the test, if there's an existing snapshot and it doesn't match you'll see `1 snapshot failed.` and whatever is missing will be highlighted in green. If the change was expected you can run jest with -u to updated it, in this project I created a script callled test:updateSnapshot that will updated the snapshots. 
 
 ### Selectors
 This project uses [reselect](https://github.com/reduxjs/reselect) to create selectors for getting data from the store. Testing selectors is pretty easy, all you need to do is mock the state, pass the mocked state into the selector, and evaluate the output.
