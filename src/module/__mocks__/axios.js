@@ -20,6 +20,8 @@ const mock = {
 					return Promise.resolve(MOCK_SUCCESS);
 				}
 				return Promise.reject(MOCK_ERROR);
+			default:
+				return Promise.reject({ error: 'Not Found'});
 		}
 	})
 };
