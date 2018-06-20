@@ -10,5 +10,10 @@ exports[`Todo renders todo correctly 1`] = `
   <span>
     Mock Todo
   </span>
+  <span
+    onClick={[Function]}
+  >
+     delete
+  </span>
 </div>
 `;
