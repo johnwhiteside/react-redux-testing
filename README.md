@@ -421,7 +421,7 @@ describe('componentWillMount', () => {
 		const props = {
 			fetchTodos: jest.fn(),
 		};
-		const wrapper = mount(<TodoList {...props} />);
+		const wrapper = shallow(<TodoList {...props} />);
 		expect(props.fetchTodos).toBeCalled();
 	});
 });
@@ -435,7 +435,7 @@ describe('componentWillReceiveProps', () => {
 			fetchTodos: jest.fn(),
 			listId: 1,
 		};
-		const wrapper = mount(<TodoList {...props} />);
+		const wrapper = shallow(<TodoList {...props} />);
 		wrapper.setProps({ id: 2 });
 		expect(props.fetchTodos).toBeCalled();
 	});
@@ -456,7 +456,7 @@ it('renders todo correctly', () => {
 	expect(todo).toMatchSnapshot();
 });
 ```
-If a snapshot was created you'll `1 snapshot written.` in the console when you run the test, if there's an existing snapshot and it doesn't match you'll see `1 snapshot failed.` and whatever is missing will be highlighted in green. If the change was expected you can run jest with -u to updated it, in this project I created a script callled test:updateSnapshot that will updated the snapshots. 
+If a snapshot was created you'll `1 snapshot written.` in the console when you run the test, if there's an existing snapshot and it doesn't match you'll see `1 snapshot failed.` and whatever is missing will be highlighted in green. If the change was expected you can run jest with -u to updated it, in this project I created a script callled test:updateSnapshot that will updated the snapshots.
 
 ### Selectors
 This project uses [reselect](https://github.com/reduxjs/reselect) to create selectors for getting data from the store. Testing selectors is pretty easy, all you need to do is mock the state, pass the mocked state into the selector, and evaluate the output.
