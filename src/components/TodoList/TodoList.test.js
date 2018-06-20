@@ -25,7 +25,7 @@ describe('TodoList', () => {
 		const props = {
 			items: [ mockTodo ],
 		};
-		const wrapper = mount(<TodoList {...props} />);
+		const wrapper = shallow(<TodoList {...props} />);
 		expect(wrapper.find(Todo).length).toEqual(1);
 	});
 
@@ -34,7 +34,7 @@ describe('TodoList', () => {
 			const props = {
 				fetchTodos: jest.fn(),
 			};
-			const wrapper = mount(<TodoList {...props} />);
+			const wrapper = shallow(<TodoList {...props} />);
 			expect(props.fetchTodos).toBeCalled();
 		});
 	});
