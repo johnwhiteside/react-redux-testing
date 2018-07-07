@@ -1,6 +1,6 @@
 import * as actionTypes from './action-types';
 
-let lastId = 0;
+let lastId = 1;
 
 export const initialState = {
 	todos: {},

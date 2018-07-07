@@ -2,12 +2,12 @@
 	"data": {
 		"todos": [
 			{
-				"id": 1,
+				"id": 0,
 				"label": "Mock Todo",
 				"isCompleted": false
 			},
 			{
-				"id": 2,
+				"id": 1,
 				"label": "Mock Todo 2",
 				"isCompleted": true
 			}

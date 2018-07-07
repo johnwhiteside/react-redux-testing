@@ -1,110 +1,62 @@
 import * as actions from '../actions';
 import reducer, { initialState } from '../reducer';
+import TodoState  from '../../factories/TodoState';
+import Todo from '../../factories/Todo';
+import axios from 'axios';
+import { TODOS_ENDPOINT } from '../constants';
+import { data as todoData } from '../__mocks__/todos.json';
+import keyBy from 'lodash/keyBy';
 
 describe('reducer', () => {
-	const label = 'Test Todo';
-	const mockTodo = {
-		id: 0,
-		label,
-		isCompleted: false,
-	};
-
 	it('handle default', () => {
 		expect(reducer(undefined, {})).toEqual(initialState);
 	});
 
 	it('handle ADD_TODO', () => {
-		const expectedResult = {
-			fetching: false,
-			todos: {
-				[mockTodo.id]: mockTodo,
-			},
-		}
-		expect(reducer(undefined, actions.addToDo(label))).toEqual(expectedResult);
+		const mockTodo = Todo.build();
+		const expectedResult = TodoState.build({ todos: keyBy([mockTodo], 'id') });
+		expect(reducer(undefined, actions.addToDo(mockTodo.label))).toEqual(expectedResult);
 	});
 
 	it('handle DELETE_TODO', () => {
-		const mockState = {
-			fetching: false,
-			todos: {
-				[mockTodo.id]: mockTodo,
-			},
-		};
-		const expectedResult = {
-			fetching: false,
-			todos: {}
-		};
+		const mockTodo = Todo.build();
+		const mockState = TodoState.build({ todos: keyBy([mockTodo], 'id') });
+		const expectedResult = TodoState.build({ todos: {} });
 		expect(reducer(mockState, actions.deleteToDo(mockTodo.id))).toEqual(expectedResult);
 	});
 
 	it('handle SET_TODO_TO_ACTIVE', () => {
-		const mockState = {
-			fetching: false,
-			todos: {
-				[mockTodo.id]: {
-					...mockTodo,
-					isCompleted: true,
-				},
-			}
-		};
-		const expectedResult = {
-			fetching: false,
-			todos: {
-				[mockTodo.id]: {
-					...mockTodo,
-					isCompleted: false,
-				},
-			},
-		};
+		const mockTodo = Todo.build({ isCompleted: true });
+		const mockTodoActive = { ...mockTodo, isCompleted: false };
+		const mockState = TodoState.build({ todos: keyBy([mockTodo], 'id') });
+		const expectedResult = TodoState.build({ todos: keyBy([mockTodoActive], 'id') });
 		expect(reducer(mockState, actions.setToDoToActive(mockTodo.id))).toEqual(expectedResult);
 	});
 
 	it('handle COMPLETE_TODO', () => {
-		const mockState = {
-			fetching: false,
-			todos: {
-				[mockTodo.id]: {
-					...mockTodo,
-					isCompleted: false,
-				},
-			},
-		};
-		const expectedResult = {
-			fetching: false,
-			todos: {
-				[mockTodo.id]: {
-					...mockTodo,
-					isCompleted: true,
-				},
-			},
-		};
+		const mockTodo = Todo.build({ isCompleted: false });
+		const mockTodoCompleted = { ...mockTodo, isCompleted: true };
+		const mockState = TodoState.build({ todos: keyBy([mockTodo], 'id') });
+		const expectedResult = TodoState.build({ todos: keyBy([mockTodoCompleted], 'id') });
 		expect(reducer(mockState, actions.completeToDo(mockTodo.id))).toEqual(expectedResult);
 	});
 
 	it('handle FETCH_START', () => {
-		const mockState = { fetching: false };
-		const expectedResult = { fetching: true };
+		const mockState = TodoState.build({ fetching: false });
+		const expectedResult = TodoState.build({ fetching: true });
 		expect(reducer(mockState, actions.fetchStart())).toEqual(expectedResult);
 	});
 
 	it('handle FETCH_FAIL', () => {
-		const mockState = { fetching: true };
-		const expectedResult = { fetching: false };
+		const mockState = TodoState.build({ fetching: true });
+		const expectedResult = TodoState.build({ fetching: false });
 		expect(reducer(mockState, actions.fetchFail())).toEqual(expectedResult);
 	});
 
 	it('handle FETCH_SUCCESS', () => {
-		const mockState = {
-			fetching: true,
-			todos: {},
-		};
-		const todos = {
-			[mockTodo.id]: mockTodo,
-		};
-		const expectedResult = {
-			fetching: false,
-			todos,
-		};
-		expect(reducer(mockState, actions.fetchSuccess(todos))).toEqual(expectedResult);
+		const mockState = TodoState.build({ fetching: true });
+		const todos = keyBy(todoData.todos, 'id');
+		const expectedResult = TodoState.build({ fetching: false, todos });
+		expect(reducer(mockState, actions.fetchSuccess(todoData.todos))).toEqual(expectedResult);
 	});
 });
